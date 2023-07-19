@@ -1,7 +1,17 @@
 
+#' @title Set Working Directory and Seed
+#' @description
+#' This function allows the user to set their working directory and seed using
+#' only one function. This is a required step when performing any kind of
+#' analyses in RStudio to allow for reproducible results.
+#' @param file_path a string input, a file path to the folder where all generated files will be stored
+#' @param seed_number a random number that is user-defined
+#' @return
+#' @export
+#' @examples
 setwd_seed <- function(file_path,seed_number) {
-  setwd(file_path) #include the file path to the folder where all your files are stored
-  set.seed(seed_number) #choose any random number
+  setwd(file_path)
+  set.seed(seed_number)
 }
 
 create_phyloseq <- function(abund, taxonomy, metadata) {
