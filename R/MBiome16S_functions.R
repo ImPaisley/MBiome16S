@@ -1,4 +1,3 @@
-
 #' @title Set Working Directory and Seed
 #' @description
 #' This function allows the user to set their working directory and seed using
