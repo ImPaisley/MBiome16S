@@ -114,14 +114,8 @@ metadta <- abund_metadata$metadata
 ## tables to input into the following functions (again RUN FUNCTIONS FIRST!)
 
 ## Batch correction
-## first, create Bray-Curtis dissimilarity distance matrix
-## you can either use the dat.01per or dat.ra tables as input,
-## they give the same result
 
-ra.bc.dist <- vegdist(dat.ra, method = "bray")
-#OR dat01.bc.dist <- vegdist(dat.01per, method = "bray") if using dat01.per abundance
-
-## next, determine if the batch effect is present and significant
+## Determine if the batch effect is present and significant
 # NOTE: if checking for the batch effect, you must have a column named
 # "Batch" in your metadata how the batch is defined is dependent on your project.
 # For example, if you had multiple individuals aid in numerous sequence runs
@@ -129,24 +123,25 @@ ra.bc.dist <- vegdist(dat.ra, method = "bray")
 # each sample was a part of.
 
 ## function
-batch_test <-function(bray_dist_matrix, metadata){
+batch_test <-function(abundance_data, metadata){
   library(vegan)
-  dis.Batch <- betadisper(bray_dist_matrix,metadata$Batch) # betadisper calculates dispersion (variances) within each group
+  bc.dist <- vegdist(abundance_data, method = "bray") # creates distance matrix; you can either use the dat.01per or dat.ra tables as input
+  dis.Batch <- betadisper(bc.dist,metadata$Batch) # betadisper calculates dispersion (variances) within each group
   test <- permutest(dis.Batch, pairwise=TRUE, permutations=999) #determines if the variances differ by groups
   if (test$tab$`Pr(>F)`[1] <= 0.05){    #differences are SIGNIFICANT - use ANOSIM
-    ano_sim <- anosim(bray_dist_matrix, metadata$Batch, permutations = 999)
+    ano_sim <- anosim(bc.dist, metadata$Batch, permutations = 999)
     return(ano_sim)
   }
   else{            #differences are NOT SIGNIFICANT - use PERMANOVA (adonis))
-    p_anova <- adonis2(bray_dist_matrix~metadata$Batch, permutations = 999)
+    p_anova <- adonis2(bc.dist~metadata$Batch, permutations = 999)
     return(p_anova)
   }
 }
 
 ## insert your input into the function
-# "bray_dist_matrix" = insert the distance matrix you just created
+# "abundance" = insert the abundance table you just created (dat.ra, dat.01per, etc.)
 # "metadata" = insert your metadata variable (may be already named 'metadata')
-batch_test(ra.bc.dist, metadata)
+batch_test(abundance, metadata)
 
 ## If p <= 0.05, then the batch effect was found to be significant and you MUST
 ## correct the batch effect BEFORE moving on to further analyses
@@ -244,9 +239,9 @@ abline(v = inflection, col="black", lwd=1.4) # creates the inflection line at sp
 ###       analyses on your data, only taxonomic analyses.
 
 ## RUN FUNCTIONS FIRST!
-# use "calculate_abund.metadta" if you have your metadata file
+# use "calculate_abund.metadata" if you have your metadata file
 # use "calculate_abund" if ignoring metadata (NO metadata file)
-calculate_abund.metadata <- function(feature_csv,metadata_csv){
+calculate_abund.metadata_ADJ <- function(feature_csv,metadata_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
   #transposed so that the row names are now the sample names and the ASVs are the columns
@@ -277,7 +272,7 @@ calculate_abund.metadata <- function(feature_csv,metadata_csv){
   names(dfs_to_return) <- c("dat", "metadata","dat.dom","dat.pa","dat.01per","dat.001per","dat.ra")
   return(dfs_to_return)
 }
-calculate_abund <- function(feature_csv){
+calculate_abund_ADJ <- function(feature_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
   #transposed so that the row names are now the sample names and the ASVs are the columns
@@ -305,8 +300,8 @@ calculate_abund <- function(feature_csv){
 # "feature.csv" = insert the name of your ADJUSTED feature table .csv file
 # "metadata.csv" = insert the name of your metadata .csv file
 
-abund_metadata <- calculate_abund.metadata("feature_ADJUSTED.csv","metadata.csv") #if you have metadata
-abund <- calculate_abund("feature_ADJUSTED.csv") #if you have NO metadata
+abund_metadata <- calculate_abund.metadata_ADJ("feature_ADJUSTED.csv","metadata.csv") #if you have metadata
+abund <- calculate_abund_ADJ("feature_ADJUSTED.csv") #if you have NO metadata
 
 # functions will return a list of data frames (must assign to a variable in order to access them):
 # dat = your original adjusted feature table that is transposed (or flipped)
@@ -636,33 +631,32 @@ text(y=160000, x=1, labels="a", col="red", cex=1.2)
 
 # stop saving to pdf
 dev.off()
-###### Beta Diversity - Creating Distance Matrix ######
-library(vegan)
-bc.dist <- vegdist(dat.ra, method = "bray") # you can use either dat.ra or dat.01per to produce the distance matrix
+
 ###### Beta Diversity - Statistics ######
 # RUN FUNCTION FIRST!!
-betadiv_stats <-function(bray_dist_matrix, metadata){
+betadiv_stats <-function(abundance_data, metadata){
   library(vegan)
-  dis.Variable <- betadisper(bray_dist_matrix,metadata) # betadisper calculates dispersion (variances) within each group
+  bc.dist <- vegdist(abundance_data, method = "bray") # you can use either dat.ra or dat.01per to produce the distance matrix
+  dis.Variable <- betadisper(bc.dist,metadata) # betadisper calculates dispersion (variances) within each group
   test <- permutest(dis.Variable, pairwise=TRUE, permutations=999) #determines if the variances differ by groups
   if (test$tab$`Pr(>F)`[1] <= 0.05){    #differences are SIGNIFICANT - use ANOSIM
-    ano_sim <- anosim(bray_dist_matrix, metadata, permutations = 999)
-    return(ano_sim)
+    ano_sim <- anosim(bc.dist, metadata, permutations = 999)
+    return(list(c(bc.dist,ano_sim)))
   }
   else{            #differences are NOT SIGNIFICANT - use PERMANOVA (adonis))
-    p_anova <- adonis2(bray_dist_matrix~metadata, permutations = 999)
-    return(p_anova)
+    p_anova <- adonis2(bc.dist~metadata, permutations = 999)
+    return(list(c(bc.dist,p_anova)))
   }
 }
 ## insert your input into the function
-# "bray_dist_matrix" = insert the distance matrix you created
+# "abundance_data" = insert the distance matrix you created
 # "metadata$Variable" = insert your metadata variable with the Variable you want to test (may be already named 'metadata')
-betadiv_stats(bc.dist,metadata$Variable)
+betadiv <- betadiv_stats(abundance_data,metadata$Variable)
 
 ###### Beta Diversity - nMDS plots ######
 library(vegan)
 # Creating nMDS plot - 2D
-nmds2d <- metaMDS(bc.dist,k=2,autotransform = F,trymax=20)
+nmds2d <- metaMDS(bc.dist,k=2,autotransform = F,trymax=20) # you will have to extract bc.dist from the previous analysis (object betadiv)
 nmds2d
 #Dimensions = 2
 #Stress =
