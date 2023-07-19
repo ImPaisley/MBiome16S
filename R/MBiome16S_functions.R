@@ -4,6 +4,26 @@ setwd_seed <- function(file_path,seed_number) {
   set.seed(seed_number) #choose any random number
 }
 
+create_phyloseq <- function(abund, taxonomy, metadata) {
+  library(phyloseq)
+  library(microbiome)
+  asvdat <- as.data.frame(t(abund)) #ASV/taxa should be the rows ("# of obs.")
+  taxdat <- read.csv(taxonomy, header = TRUE, row.names = 1)
+  meta <- read.csv(metadata, header = TRUE, row.names = 1)
+  asvmat <- data.matrix(asvdat)
+  taxmat <- as.matrix(taxdat) # use as.matrix NOT as.data.matrix as the data will convert the data into numbers
+  ASV <- otu_table(asvmat, taxa_are_rows = TRUE)
+  TAX <- tax_table(taxmat)
+  META <- sample_data(meta)
+  #Merging metadata, taxonomy, and ASV tables into one phyloseq object
+  physeq <- phyloseq(ASV,TAX,META)
+  #Use transform functions from microbiome package
+  transform <- microbiome::transform #converts into relative abundances
+  #Merge rare taxa in to "Other"
+  physeq_transform <- transform(physeq, "compositional")
+  return(physeq_transform)
+}
+
 calculate_abund.metadata <- function(feature_csv,metadata_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
@@ -143,26 +163,6 @@ calculate_abund_ADJ <- function(feature_csv){
                         as.data.frame(dat.ra))
   names(dfs_to_return) <- c("dat","dat.dom","dat.pa","dat.01per","dat.001per","dat.ra")
   return(dfs_to_return)
-}
-
-create_phyloseq <- function(abund, taxonomy, metadata) {
-  library(phyloseq)
-  library(microbiome)
-  asvdat <- as.data.frame(t(abund)) #ASV/taxa should be the rows ("# of obs.")
-  taxdat <- read.csv(taxonomy, header = TRUE, row.names = 1)
-  meta <- read.csv(metadata, header = TRUE, row.names = 1)
-  asvmat <- data.matrix(asvdat)
-  taxmat <- as.matrix(taxdat) # use as.matrix NOT as.data.matrix as the data will convert the data into numbers
-  ASV <- otu_table(asvmat, taxa_are_rows = TRUE)
-  TAX <- tax_table(taxmat)
-  META <- sample_data(meta)
-  #Merging metadata, taxonomy, and ASV tables into one phyloseq object
-  physeq <- phyloseq(ASV,TAX,META)
-  #Use transform functions from microbiome package
-  transform <- microbiome::transform #converts into relative abundances
-  #Merge rare taxa in to "Other"
-  physeq_transform <- transform(physeq, "compositional")
-  return(physeq_transform)
 }
 
 taxon_aggregate <- function(phyloseq_object,tax_level) {
