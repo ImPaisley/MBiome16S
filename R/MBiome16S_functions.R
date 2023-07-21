@@ -14,6 +14,18 @@ setwd_seed <- function(file_path,seed_number) {
   set.seed(seed_number)
 }
 
+#' @title Creating a Phyloseq Object using Phyloseq
+#' @description
+#' This function allows the user to create a phyloseq object in order to
+#' perform further taxonomic analyses and visualization using the
+#' package 'phyloseq'.
+#' @param abund a dataframe containing abundance information; created using calculate_abund.metadata or calculate_abund functions
+#' @param taxonomy a csv file that contains taxonomic information, ASV/OTU should be rows while the taxonomic information should be columns
+#' @param metadata a csv file that contains any metadata on your samples, samples should be rows
+#' @return a phyloseq object in which the abundances have been transformed to relative abundances
+#' @export
+#' @examples
+#' create_phyloseq(dat.ra, "taxonomy.csv", "metadata.csv")
 create_phyloseq <- function(abund, taxonomy, metadata) {
   library(phyloseq)
   library(microbiome)
