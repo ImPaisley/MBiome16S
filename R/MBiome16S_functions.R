@@ -152,7 +152,7 @@ batch_test <-function(abundance_data, metadata){
 #' effect is NOT present in the data, then batch correction is NOT required.
 #' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
 #' @param metadata_csv a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
-#' @return the original feature and metadata input files along with the adjusted ASV/OTU table; a csv file of the adjusted ASV/OTU table is written to the working directory
+#' @return a list of data frames: original feature and metadata input files along with the adjusted ASV/OTU table; a csv file of the adjusted ASV/OTU table is written to the working directory
 #' @export
 #' @examples NA
 batch_correct <- function(feature_csv,metadata_csv){
@@ -178,6 +178,20 @@ batch_correct <- function(feature_csv,metadata_csv){
   return(dfs_to_return)
 }
 
+#' @title Create Filtered Abundance Tables using batch-adjusted OTU/ASV input (Illumina MiSeq)
+#' @description
+#' This function allows the user to create numerous ASV/OTU abundance tables
+#' (ASV/OTUs occurring less than 0.1%, ASV/OTUs occurring less than 0.01%,
+#' dominant ASV/OTUs, presence/absence form of dominant ASV/OTUs, and relative
+#' abundances of ASV/OTUs occurring less than 0.1%) each of which can
+#' perform further microbiome analyses and visualization dependent on the project.
+#' Metadata input is NOT used within this function, thus certain analyses
+#' CANNOT be performed if metadata is required.
+#' @param feature_csv a csv file that contains batch-adjusted ASV/OTU counts of each sample
+#' @param metadata_csv a csv file that contains metadata for each sample
+#' @return a list of data frames that are each different abundance filters; a csv file is written to the working directory for some abundance tables
+#' @export
+#' @examples NA
 calculate_abund.metadata_ADJ <- function(feature_csv,metadata_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
@@ -190,18 +204,18 @@ calculate_abund.metadata_ADJ <- function(feature_csv,metadata_csv){
   dat <- dat[common.rownames,] #subsets dat to only include the same row names as metadata
   write.csv(dat, "feature_ADJUSTED-Transposed_matched.csv")
   metadata <- metadata[common.rownames,] #subsets metadata to only include the same row names as dat
-  write.csv(dat, "metadata_matched.csv")
+  write.csv(dat, "feature_metadata_matched.csv")
   otu.abund<-which(colSums(dat)>2) #removes singletons and doubletons
   dat.dom<-dat[,otu.abund] #include dominant taxa
   dat.pa<-decostand(dat.dom, method ="pa") #turns dat.dom into presence/absence data (1/0)
   dat.otus.01per<-which(colSums(dat.pa) > (0.01*nrow(dat.pa)))
   dat.01per<-dat.dom[,dat.otus.01per] #removed ASVs that occur less than 0.1%
-  write.csv(dat.01per, "feature_01percent.csv")
+  write.csv(dat.01per, "featureADJ_01percent.csv")
   dat.otus.001per<-which(colSums(dat.pa) > (0.001*nrow(dat.pa)))
   dat.001per<-dat.dom[,dat.otus.001per] #removed ASVs that occur less than 0.01%; increases the number of ASVs - includes more "microdiversity"
-  write.csv(dat.001per, "feature_001percent.csv")
+  write.csv(dat.001per, "featureADJ_001percent.csv")
   dat.ra<-decostand(dat.01per, method = "total") #relative abundance of >1% taxa
-  write.csv(dat.ra, "relative-abundance.csv")
+  write.csv(dat.ra, "relative-abundance_ADJ.csv")
   dfs_to_return <- list(as.data.frame(dat),as.data.frame(metadata),
                         as.data.frame(dat.dom),as.data.frame(dat.pa),
                         as.data.frame(dat.01per),as.data.frame(dat.001per),
@@ -210,6 +224,19 @@ calculate_abund.metadata_ADJ <- function(feature_csv,metadata_csv){
   return(dfs_to_return)
 }
 
+#' @title Create Filtered Abundance Tables using batch-adjusted OTU/ASV input (Illumina MiSeq)
+#' @description
+#' This function allows the user to create numerous ASV/OTU abundance tables
+#' (ASV/OTUs occurring less than 0.1%, ASV/OTUs occurring less than 0.01%,
+#' dominant ASV/OTUs, presence/absence form of dominant ASV/OTUs, and relative
+#' abundances of ASV/OTUs occurring less than 0.1%) each of which can
+#' perform further microbiome analyses and visualization dependent on the project.
+#' Metadata input is NOT used within this function, thus certain analyses
+#' CANNOT be performed if metadata is required.
+#' @param feature_csv a csv file that contains batch-adjusted ASV/OTU counts of each sample
+#' @return a list of data frames that are each different abundance filters; a csv file is written to the working directory for some abundance tables
+#' @export
+#' @examples NA
 calculate_abund_ADJ <- function(feature_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
@@ -221,12 +248,12 @@ calculate_abund_ADJ <- function(feature_csv){
   dat.pa<-decostand(dat.dom, method ="pa") #turns dat.dom into presence/absence data (1/0)
   dat.otus.01per<-which(colSums(dat.pa) > (0.01*nrow(dat.pa)))
   dat.01per<-dat.dom[,dat.otus.01per] #removed ASVs that occur less than 0.1%
-  write.csv(dat.01per, "feature_01percent.csv")
+  write.csv(dat.01per, "featureADJ_01percent.csv")
   dat.otus.001per<-which(colSums(dat.pa) > (0.001*nrow(dat.pa)))
   dat.001per<-dat.dom[,dat.otus.001per] #removed ASVs that occur less than 0.01%; increases the number of ASVs - includes more "microdiversity"
-  write.csv(dat.001per, "feature_001percent.csv")
+  write.csv(dat.001per, "featureADJ_001percent.csv")
   dat.ra<-decostand(dat.01per, method = "total") #relative abundance of >1% taxa
-  write.csv(dat.ra, "relative-abundance.csv")
+  write.csv(dat.ra, "relative-abundance_ADJ.csv")
   dfs_to_return <- list(as.data.frame(dat),as.data.frame(dat.dom),as.data.frame(dat.pa),
                         as.data.frame(dat.01per),as.data.frame(dat.001per),
                         as.data.frame(dat.ra))
@@ -328,6 +355,18 @@ betadiv_stats <-function(abundance_data, metadata){
   }
 }
 
+#' @title Filtering envfit vectors (vegan)
+#' @description
+#' Filters CCA/nMDS/MDS envfit vectors based on r² values. Additionally, this
+#' allows the user to display only significant values in their final plot.
+#' Beckers, Niklas. (2017). Re: How do I set cutoff r² values for plotting
+#' arrows from function envfit in R?. Retrieved from:
+#' https://www.researchgate.net/post/How_do_I_set_cutoff_r_values_for_plotting_arrows_from_function_envfit_in_R/59ba8e1c96b7e411171a6b8c/citation/download.
+#' @param fit result of ennfit function in vegan
+#' @param r.select numeric, correlation minimum threshold
+#' @return fits as a result of the function selections
+#' @export
+#' @examples NA
 select.envfit<-function(fit, r.select){ #needs two sorts of input: fit= result of envfit, r.select= numeric, correlation minimum threshold
   for (i in 1:length(fit$vectors$r)) { #run for-loop through the entire length of the column r in object fit$vectors$r starting at i=1
     if (fit$vectors$r[i]<r.select) { #Check whether r<r.select, i.e. if the correlation is weaker than the threshold value. Change this Parameter for r-based selection
