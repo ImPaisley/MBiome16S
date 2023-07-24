@@ -262,6 +262,7 @@ calculate_abund_ADJ <- function(feature_csv){
 }
 
 taxon_aggregate <- function(phyloseq_object,tax_level) {
+  library(phyloseq)
   aggregation <- aggregate_taxa(phyloseq_object, tax_level) # aggregates the phyloseq object based on the taxonomic level provided
   counts <- as.data.frame(taxa_sums(aggregation)) # changes the aggregation to a table that can be exported and/or viewed
   colnames(counts)[1] <- paste(tax_level, "Count", sep="") # changes the name of first column in the table
@@ -270,6 +271,7 @@ taxon_aggregate <- function(phyloseq_object,tax_level) {
 }
 
 top_taxa <- function(phyloseq_object, tax_level, n){
+  library(phyloseq)
   top_taxanames <- sort(tapply(taxa_sums(phyloseq_object), tax_table(phyloseq_object)[, tax_level], sum), TRUE)[1:n]
   top_names <- as.data.frame(top_taxanames)
   colnames(top_names) <- paste(tax_level, "Abundance", sep=".")
