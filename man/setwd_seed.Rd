@@ -20,5 +20,5 @@ only one function. This is a required step when performing any kind of
 analyses in RStudio to allow for reproducible results.
 }
 \examples{
-setwd_seed("C:/Users/Public/Documents",2023)
+NA
 }

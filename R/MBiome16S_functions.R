@@ -124,7 +124,7 @@ calculate_abund <- function(feature_csv){
 #' "batch effect". In order to perform this test, the metadata input file MUST
 #' contain a 'Batch' column/variable.
 #' @param abundance_data a data frame containing ASV/OTU abundance data per sample
-#' @param metadata_csv a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
+#' @param metadata a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
 #' @return ANOSIM results (parametric testing) or PERMANOVA results (non-parametric testing)
 #' @export
 #' @examples NA

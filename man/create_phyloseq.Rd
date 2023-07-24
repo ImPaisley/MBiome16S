@@ -22,5 +22,5 @@ perform further taxonomic analyses and visualization using the
 package 'phyloseq'.
 }
 \examples{
-create_phyloseq(dat.ra, "taxonomy.csv", "metadata.csv")
+NA
 }
