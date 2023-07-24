@@ -1,12 +1,15 @@
 Package: MBiome16S
 Type: Package
-Title: What the Package Does (Title Case)
+Title: 16S Microbiome Analyses (Diversity and Taxonomy)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Paisley Samuel <paisley.samuel.98@gmail.com>,
+   Lauren Krausfeldt <lkrausfe@gmail.com>
+Maintainer: Paisley Samuel <paisley.samuel.98@gmail.com>
+Description: Conducts essential microbiome analyses on Illumina Miseq
+    sequencing data. Functions include creating filtered abundance tables, 
+    assessing and adjusting for batch effect, alpha and beta diversity analyses
+    using vegan, and taxonomy analyses conducted using phyloseq.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.3
