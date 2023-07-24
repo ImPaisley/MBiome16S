@@ -7,8 +7,7 @@
 #' @param seed_number a random number that is user-defined
 #' @return This function does not return anything
 #' @export
-#' @examples
-#' setwd_seed("C:/Users/Public/Documents",2023)
+#' @examples NA
 setwd_seed <- function(file_path,seed_number) {
   setwd(file_path)
   set.seed(seed_number)
@@ -24,8 +23,7 @@ setwd_seed <- function(file_path,seed_number) {
 #' @param metadata a csv file that contains any metadata on your samples, samples should be rows
 #' @return a phyloseq object in which the abundances have been transformed to relative abundances
 #' @export
-#' @examples
-#' create_phyloseq(dat.ra, "taxonomy.csv", "metadata.csv")
+#' @examples NA
 create_phyloseq <- function(abund, taxonomy, metadata) {
   library(phyloseq)
   library(microbiome)
@@ -46,6 +44,20 @@ create_phyloseq <- function(abund, taxonomy, metadata) {
   return(physeq_transform)
 }
 
+#' @title Create Filtered Abundance Tables using Raw OTU/ASV input (Illumina MiSeq)
+#' @description
+#' This function allows the user to create numerous ASV/OTU abundance tables
+#' (ASV/OTUs occurring less than 0.1%, ASV/OTUs occurring less than 0.01%,
+#' dominant ASV/OTUs, presence/absence form of dominant ASV/OTUs, and relative
+#' abundances of ASV/OTUs occurring less than 0.1%) each of which can
+#' perform further microbiome analyses and visualization dependent on the project.
+#' Metadata input is used to correspond samples to their respective metadata;
+#' any samples without metadata is NOT included within the resulting data frames.
+#' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
+#' @param metadata_csv a csv file that contains metadata for each sample
+#' @return a list of data frames that are each different abundance filters which can be used for further analyses
+#' @export
+#' @examples NA
 calculate_abund.metadata <- function(feature_csv,metadata_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
@@ -73,6 +85,19 @@ calculate_abund.metadata <- function(feature_csv,metadata_csv){
   return(dfs_to_return)
 }
 
+#' @title Create Filtered Abundance Tables using Raw OTU/ASV input (Illumina MiSeq)
+#' @description
+#' This function allows the user to create numerous ASV/OTU abundance tables
+#' (ASV/OTUs occurring less than 0.1%, ASV/OTUs occurring less than 0.01%,
+#' dominant ASV/OTUs, presence/absence form of dominant ASV/OTUs, and relative
+#' abundances of ASV/OTUs occurring less than 0.1%) each of which can
+#' perform further microbiome analyses and visualization dependent on the project.
+#' Metadata input is NOT used within this function, thus diversity analyses
+#' CANNOT be performed if metadata is required.
+#' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
+#' @return a list of data frames that are each different abundance filters
+#' @export
+#' @examples NA
 calculate_abund <- function(feature_csv){
   library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
@@ -93,6 +118,16 @@ calculate_abund <- function(feature_csv){
   return(dfs_to_return)
 }
 
+#' @title Testing for Batch Effect
+#' @description
+#' This function allows the user to test their ASV/OTU abundance data for the
+#' "batch effect". In order to perform this test, the metadata input file MUST
+#' contain a 'Batch' column/variable.
+#' @param abundance_data a data frame containing ASV/OTU abundance data per sample
+#' @param metadata_csv a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
+#' @return ANOSIM results (parametric testing) or PERMANOVA results (non-parametric testing)
+#' @export
+#' @examples NA
 batch_test <-function(abundance_data, metadata){
   library(vegan)
   bc.dist <- vegdist(abundance_data, method = "bray") # creates distance matrix; you can either use the dat.01per or dat.ra tables as input
@@ -108,6 +143,18 @@ batch_test <-function(abundance_data, metadata){
   }
 }
 
+#' @title Adjusting for Batch Effect
+#' @description
+#' This function allows the user to correct their ASV/OTU abundance data due to
+#' the presence of the "batch effect" in their data.  Adjusting for any
+#' batch effect allows for the user's analyses to be statistically sound against
+#' any introduced bias from any introduced batches in their data. If the batch
+#' effect is NOT present in the data, then batch correction is NOT required.
+#' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
+#' @param metadata_csv a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
+#' @return the original feature and metadata input files along with the adjusted ASV/OTU table; a csv file of the adjusted ASV/OTU table is written to the working directory
+#' @export
+#' @examples NA
 batch_correct <- function(feature_csv,metadata_csv){
   library(vegan)
   library(MMUPHin)
