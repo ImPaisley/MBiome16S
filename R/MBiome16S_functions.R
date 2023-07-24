@@ -3,8 +3,8 @@
 #' This function allows the user to set their working directory and seed using
 #' only one function. This is a required step when performing any kind of
 #' analyses in RStudio to allow for reproducible results.
-#' @param file_path a string input, a file path to the folder where all generated files will be stored
-#' @param seed_number a random number that is user-defined
+#' @param file_path string, a file path to the folder where all generated files will be stored
+#' @param seed_number numeric, user-defined random number
 #' @return This function does not return anything
 #' @export
 #' @examples NA
@@ -18,9 +18,9 @@ setwd_seed <- function(file_path,seed_number) {
 #' This function allows the user to create a phyloseq object in order to
 #' perform further taxonomic analyses and visualization using the
 #' package 'phyloseq'.
-#' @param abund a dataframe containing abundance information; created using calculate_abund.metadata or calculate_abund functions
-#' @param taxonomy a csv file that contains taxonomic information, ASV/OTU should be rows while the taxonomic information should be columns
-#' @param metadata a csv file that contains any metadata on your samples, samples should be rows
+#' @param abund data frame, containing abundance information; created using calculate_abund.metadata or calculate_abund functions
+#' @param taxonomy string, csv file that contains taxonomic information, ASV/OTU should be rows while the taxonomic information should be columns
+#' @param metadata string, csv file that contains any metadata on your samples, samples should be rows
 #' @return a phyloseq object in which the abundances have been transformed to relative abundances
 #' @export
 #' @examples NA
@@ -53,8 +53,8 @@ create_phyloseq <- function(abund, taxonomy, metadata) {
 #' perform further microbiome analyses and visualization dependent on the project.
 #' Metadata input is used to correspond samples to their respective metadata;
 #' any samples without metadata is NOT included within the resulting data frames.
-#' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
-#' @param metadata_csv a csv file that contains metadata for each sample
+#' @param feature_csv string, csv file that contains raw ASV/OTU counts of each sample
+#' @param metadata_csv string, csv file that contains metadata for each sample
 #' @return a list of data frames that are each different abundance filters which can be used for further analyses
 #' @export
 #' @examples NA
@@ -94,7 +94,7 @@ calculate_abund.metadata <- function(feature_csv,metadata_csv){
 #' perform further microbiome analyses and visualization dependent on the project.
 #' Metadata input is NOT used within this function, thus diversity analyses
 #' CANNOT be performed if metadata is required.
-#' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
+#' @param feature_csv string, csv file that contains raw ASV/OTU counts of each sample
 #' @return a list of data frames that are each different abundance filters
 #' @export
 #' @examples NA
@@ -123,8 +123,8 @@ calculate_abund <- function(feature_csv){
 #' This function allows the user to test their ASV/OTU abundance data for the
 #' "batch effect". In order to perform this test, the metadata input file MUST
 #' contain a 'Batch' column/variable.
-#' @param abundance_data a data frame containing ASV/OTU abundance data per sample
-#' @param metadata a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
+#' @param abundance_data data frame, containing ASV/OTU abundance data per sample
+#' @param metadata string, csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
 #' @return ANOSIM results (parametric testing) or PERMANOVA results (non-parametric testing)
 #' @export
 #' @examples NA
@@ -150,8 +150,8 @@ batch_test <-function(abundance_data, metadata){
 #' batch effect allows for the user's analyses to be statistically sound against
 #' any introduced bias from any introduced batches in their data. If the batch
 #' effect is NOT present in the data, then batch correction is NOT required.
-#' @param feature_csv a csv file that contains raw ASV/OTU counts of each sample
-#' @param metadata_csv a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
+#' @param feature_csv string, csv file that contains raw ASV/OTU counts of each sample
+#' @param metadata_csv string, csv file that contains metadata for each sample; there MUST be a 'Batch' variable present
 #' @return a list of data frames: original feature and metadata input files along with the adjusted ASV/OTU table; a csv file of the adjusted ASV/OTU table is written to the working directory
 #' @export
 #' @examples NA
@@ -187,8 +187,8 @@ batch_correct <- function(feature_csv,metadata_csv){
 #' perform further microbiome analyses and visualization dependent on the project.
 #' Metadata input is NOT used within this function, thus certain analyses
 #' CANNOT be performed if metadata is required.
-#' @param feature_csv a csv file that contains batch-adjusted ASV/OTU counts of each sample
-#' @param metadata_csv a csv file that contains metadata for each sample
+#' @param feature_csv string, csv file that contains batch-adjusted ASV/OTU counts of each sample
+#' @param metadata_csv string, csv file that contains metadata for each sample
 #' @return a list of data frames that are each different abundance filters; a csv file is written to the working directory for some abundance tables
 #' @export
 #' @examples NA
@@ -233,7 +233,7 @@ calculate_abund.metadata_ADJ <- function(feature_csv,metadata_csv){
 #' perform further microbiome analyses and visualization dependent on the project.
 #' Metadata input is NOT used within this function, thus certain analyses
 #' CANNOT be performed if metadata is required.
-#' @param feature_csv a csv file that contains batch-adjusted ASV/OTU counts of each sample
+#' @param feature_csv string, csv file that contains batch-adjusted ASV/OTU counts of each sample
 #' @return a list of data frames that are each different abundance filters; a csv file is written to the working directory for some abundance tables
 #' @export
 #' @examples NA
@@ -266,8 +266,8 @@ calculate_abund_ADJ <- function(feature_csv){
 #' This function is used to aggregate taxonomic data on a desired taxonomic level
 #' and display the overall abundance of the indicated taxonomic level. A csv file
 #' of the resulting count data frame is also written to the working directory.
-#' @param phyloseq_object a phyloseq object containing taxonomic information
-#' @param tax_level a string indicating the taxonomic level
+#' @param phyloseq_object phyloseq object, containing taxonomic information
+#' @param tax_level string, desired taxonomic level
 #' @return a data frame that includes count data of the indicated taxonomic level
 #' @export
 #' @examples NA
@@ -284,9 +284,9 @@ taxon_aggregate <- function(phyloseq_object,tax_level) {
 #' @description
 #' This function calculates the top taxa (user-defined) and their abundances. A
 #' csv file of the top taxa counts are written to the working directory.
-#' @param phyloseq_object a phyloseq object containing taxonomic information
-#' @param tax_level a string indicating desired the taxonomic level
-#' @param n numeric; the number of desired top taxa
+#' @param phyloseq_object phyloseq object, containing taxonomic information
+#' @param tax_level string, desired taxonomic level
+#' @param n numeric, number of desired top taxa
 #' @return a phyloseq object that is filtered to the desired number of top taxa
 #' @export
 #' @examples NA
@@ -305,7 +305,7 @@ top_taxa <- function(phyloseq_object, tax_level, n){
 #' measures includes species richness, number of individuals, species evenness,
 #' Shannon Diversity Index, and inverse Simpson Diversity index. A csv file of
 #' the resulting data frame is also written to the working directory.
-#' @param abundance_data a data frame containing ASV/OTU abundance data per sample
+#' @param abundance_data data frame, containing ASV/OTU abundance data per sample
 #' @return a data frame containing each alpha diversity measure for each sample
 #' @export
 #' @examples NA
@@ -366,8 +366,8 @@ p_anova <- function(adiv_var, test_var) {
 #' This function is used to perform a Kruskal-Wallis and pairwise Wilcoxon test
 #' to analyze the statistical significance of an alpha diversity measure against
 #' a given variable.
-#' @param adiv_var
-#' @param test_var
+#' @param adiv_var  a variable within the metadata data frame that accounts for an alpha diversity measure (example: metadata$inv.D)
+#' @param test_var a variable within the metadata data frame (format: metadata$Variable)
 #' @return a list containing the results of the Kruskal-Wallis test, pairwise Wilcoxon test, and the letters showing the significance between each variable level
 #' @export
 #' @examples NA
@@ -397,7 +397,7 @@ nonp_kruskal <- function(adiv_var, test_var) {
 #' This function allows the user to create a distance matrix using Bray-Curtis
 #' distances. Once the distance matrix is created, statistical analyses are
 #' performed using the resulting distance matrix and desired variable.
-#' @param abundance_data a data frame containing ASV/OTU abundance data per sample
+#' @param abundance_data data frame, containing ASV/OTU abundance data per sample
 #' @param metadata_var a variable within the metadata data frame (format: metadata$Variable)
 #' @return a list containing the resulting distance matrix and statistical analysis outcomes
 #' @export
@@ -424,7 +424,7 @@ betadiv_stats <-function(abundance_data, metadata_var){
 #' Beckers, Niklas. (2017). Re: How do I set cutoff r² values for plotting
 #' arrows from function envfit in R?. Retrieved from:
 #' https://www.researchgate.net/post/How_do_I_set_cutoff_r_values_for_plotting_arrows_from_function_envfit_in_R/59ba8e1c96b7e411171a6b8c/citation/download.
-#' @param fit result of ennfit function in vegan
+#' @param fit result of envfit function in vegan
 #' @param r.select numeric, correlation minimum threshold
 #' @return fits as a result of the function selections
 #' @export
