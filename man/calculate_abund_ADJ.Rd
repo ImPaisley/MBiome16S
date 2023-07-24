@@ -7,7 +7,7 @@
 calculate_abund_ADJ(feature_csv)
 }
 \arguments{
-\item{feature_csv}{a csv file that contains batch-adjusted ASV/OTU counts of each sample}
+\item{feature_csv}{string, csv file that contains batch-adjusted ASV/OTU counts of each sample}
 }
 \value{
 a list of data frames that are each different abundance filters; a csv file is written to the working directory for some abundance tables

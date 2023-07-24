@@ -7,9 +7,9 @@
 batch_test(abundance_data, metadata)
 }
 \arguments{
-\item{abundance_data}{a data frame containing ASV/OTU abundance data per sample}
+\item{abundance_data}{data frame, containing ASV/OTU abundance data per sample}
 
-\item{metadata}{a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present}
+\item{metadata}{string, csv file that contains metadata for each sample; there MUST be a 'Batch' variable present}
 }
 \value{
 ANOSIM results (parametric testing) or PERMANOVA results (non-parametric testing)

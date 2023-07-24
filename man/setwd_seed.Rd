@@ -7,9 +7,9 @@
 setwd_seed(file_path, seed_number)
 }
 \arguments{
-\item{file_path}{a string input, a file path to the folder where all generated files will be stored}
+\item{file_path}{string, a file path to the folder where all generated files will be stored}
 
-\item{seed_number}{a random number that is user-defined}
+\item{seed_number}{numeric, user-defined random number}
 }
 \value{
 This function does not return anything

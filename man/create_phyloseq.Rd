@@ -7,11 +7,11 @@
 create_phyloseq(abund, taxonomy, metadata)
 }
 \arguments{
-\item{abund}{a dataframe containing abundance information; created using calculate_abund.metadata or calculate_abund functions}
+\item{abund}{data frame, containing abundance information; created using calculate_abund.metadata or calculate_abund functions}
 
-\item{taxonomy}{a csv file that contains taxonomic information, ASV/OTU should be rows while the taxonomic information should be columns}
+\item{taxonomy}{string, csv file that contains taxonomic information, ASV/OTU should be rows while the taxonomic information should be columns}
 
-\item{metadata}{a csv file that contains any metadata on your samples, samples should be rows}
+\item{metadata}{string, csv file that contains any metadata on your samples, samples should be rows}
 }
 \value{
 a phyloseq object in which the abundances have been transformed to relative abundances

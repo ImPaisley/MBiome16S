@@ -7,7 +7,7 @@
 select.envfit(fit, r.select)
 }
 \arguments{
-\item{fit}{result of ennfit function in vegan}
+\item{fit}{result of envfit function in vegan}
 
 \item{r.select}{numeric, correlation minimum threshold}
 }

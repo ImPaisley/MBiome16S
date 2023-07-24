@@ -7,9 +7,9 @@
 batch_correct(feature_csv, metadata_csv)
 }
 \arguments{
-\item{feature_csv}{a csv file that contains raw ASV/OTU counts of each sample}
+\item{feature_csv}{string, csv file that contains raw ASV/OTU counts of each sample}
 
-\item{metadata_csv}{a csv file that contains metadata for each sample; there MUST be a 'Batch' variable present}
+\item{metadata_csv}{string, csv file that contains metadata for each sample; there MUST be a 'Batch' variable present}
 }
 \value{
 a list of data frames: original feature and metadata input files along with the adjusted ASV/OTU table; a csv file of the adjusted ASV/OTU table is written to the working directory
