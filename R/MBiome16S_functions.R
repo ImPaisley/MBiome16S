@@ -261,6 +261,16 @@ calculate_abund_ADJ <- function(feature_csv){
   return(dfs_to_return)
 }
 
+#' @title Aggregation on Taxonomic Levels
+#' @description
+#' This function is used to aggregate taxonomic data on a desired taxonomic level
+#' and display the overall abundance of the indicated taxonomic level. A csv file
+#' of the resulting count data frame is also written to the working directory.
+#' @param phyloseq_object a phyloseq object containing taxonomic information
+#' @param tax_level a string indicating the taxonomic level
+#' @return a data frame that includes count data of the indicated taxonomic level
+#' @export
+#' @examples NA
 taxon_aggregate <- function(phyloseq_object,tax_level) {
   library(phyloseq)
   aggregation <- aggregate_taxa(phyloseq_object, tax_level) # aggregates the phyloseq object based on the taxonomic level provided
@@ -270,6 +280,16 @@ taxon_aggregate <- function(phyloseq_object,tax_level) {
   return(counts) # function will return the count table
 }
 
+#' @title Calculating Top Taxa
+#' @description
+#' This function calculates the top taxa (user-defined) and their abundances. A
+#' csv file of the top taxa counts are written to the working directory.
+#' @param phyloseq_object a phyloseq object containing taxonomic information
+#' @param tax_level a string indicating desired the taxonomic level
+#' @param n numeric; the number of desired top taxa
+#' @return a phyloseq object that is filtered to the desired number of top taxa
+#' @export
+#' @examples NA
 top_taxa <- function(phyloseq_object, tax_level, n){
   library(phyloseq)
   top_taxanames <- sort(tapply(taxa_sums(phyloseq_object), tax_table(phyloseq_object)[, tax_level], sum), TRUE)[1:n]
@@ -279,6 +299,16 @@ top_taxa <- function(phyloseq_object, tax_level, n){
   return(top_taxanames)
 }
 
+#' @title Calculating Alpha Diversity Measures Per Sample
+#' @description
+#' This function calculates alpha diversity measures for each sample. These
+#' measures includes species richness, number of individuals, species evenness,
+#' Shannon Diversity Index, and inverse Simpson Diversity index. A csv file of
+#' the resulting data frame is also written to the working directory.
+#' @param abundance_data a data frame containing ASV/OTU abundance data per sample
+#' @return a data frame containing each alpha diversity measure for each sample
+#' @export
+#' @examples NA
 adivmeasures <- function(abundance_data) {
   library(vegan)
   # Species richness: the number of species within a region
@@ -310,6 +340,16 @@ adivmeasures <- function(abundance_data) {
   return(diversitybysample)
 }
 
+#' @title Parametric Testing for Alpha Diversity
+#' @description
+#' This function is used to perform an ANOVA and pairwise Tukey test to analyze
+#' the statistical significance of an alpha diversity measure against a given
+#' variable.
+#' @param adiv_var a variable within the metadata data frame that accounts for an alpha diversity measure (example: metadata$inv.D)
+#' @param test_var a variable within the metadata data frame (format: metadata$Variable)
+#' @return a list containing an ANOVA table and results of the Tukey test
+#' @export
+#' @examples NA
 p_anova <- function(adiv_var, test_var) {
   library(pgirmess)
   library(multcompView)
@@ -321,10 +361,20 @@ p_anova <- function(adiv_var, test_var) {
   return(return_items)
 }
 
+#' @title Non-parametric Testing for Alpha Diversity
+#' @description
+#' This function is used to perform a Kruskal-Wallis and pairwise Wilcoxon test
+#' to analyze the statistical significance of an alpha diversity measure against
+#' a given variable.
+#' @param adiv_var
+#' @param test_var
+#' @return a list containing the results of the Kruskal-Wallis test, pairwise Wilcoxon test, and the letters showing the significance between each variable level
+#' @export
+#' @examples NA
 nonp_kruskal <- function(adiv_var, test_var) {
   library(pgirmess)
   library(multcompView)
-  kruskal.test(adiv_var ~ test_var)
+  krusk_res <- kruskal.test(adiv_var ~ test_var)
   pair_WilTest <- pairwise.wilcox.test(adiv_var, test_var, p.adjust.method = "fdr") #pairwise comparisons between the variable levels
   kmc <- kruskalmc(adiv_var ~ test_var) # multiple-comparison test
   # comparisons TRUE= significantly different or FALSE= not significantly different
@@ -337,22 +387,32 @@ nonp_kruskal <- function(adiv_var, test_var) {
   # significant letters for the multiple comparison test
   # if the letter are the SAME, then no significant differences were found
   # between those variables
-  returned_items <- list(pair_WilTest,kmc,let)
-  names(returned_items) <- c("pairwise", "multiComp","letter-comparisons")
+  returned_items <- list(krusk_res,pair_WilTest,kmc,let)
+  names(returned_items) <- c("Kruskal-Wallis Results", "pairwise", "multiComp","letter-comparisons")
   return(returned_items)
 }
 
-betadiv_stats <-function(abundance_data, metadata){
+#' @title Creating Bray-Curtis Distance Matrix & Running Beta Diversity Stats
+#' @description
+#' This function allows the user to create a distance matrix using Bray-Curtis
+#' distances. Once the distance matrix is created, statistical analyses are
+#' performed using the resulting distance matrix and desired variable.
+#' @param abundance_data a data frame containing ASV/OTU abundance data per sample
+#' @param metadata_var a variable within the metadata data frame (format: metadata$Variable)
+#' @return a list containing the resulting distance matrix and statistical analysis outcomes
+#' @export
+#' @examples NA
+betadiv_stats <-function(abundance_data, metadata_var){
   library(vegan)
   bc.dist <- vegdist(abundance_data, method = "bray") # you can use either dat.ra or dat.01per to produce the distance matrix
-  dis.Variable <- betadisper(bc.dist,metadata) # betadisper calculates dispersion (variances) within each group
+  dis.Variable <- betadisper(bc.dist,metadata_var) # betadisper calculates dispersion (variances) within each group
   test <- permutest(dis.Variable, pairwise=TRUE, permutations=999) #determines if the variances differ by groups
   if (test$tab$`Pr(>F)`[1] <= 0.05){    #differences are SIGNIFICANT - use ANOSIM
-    ano_sim <- anosim(bc.dist, metadata, permutations = 999)
+    ano_sim <- anosim(bc.dist, metadata_var, permutations = 999)
     return(list(c(bc.dist,ano_sim)))
   }
   else{            #differences are NOT SIGNIFICANT - use PERMANOVA (adonis))
-    p_anova <- adonis2(bc.dist~metadata, permutations = 999)
+    p_anova <- adonis2(bc.dist~metadata_var, permutations = 999)
     return(list(c(bc.dist,p_anova)))
   }
 }
