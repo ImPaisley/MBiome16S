@@ -41,8 +41,9 @@ create_phyloseq <- function(abund, taxonomy, metadata) {
   transform <- microbiome::transform #converts into relative abundances
   #Merge rare taxa in to "Other"
   physeq_transform <- transform(physeq, "compositional")
-  return(physeq)
-  return(physeq_transform)
+  phylobjs_return <- list(physeq,physeq_transform)
+  names(phylobjs_return) <- c("physeq", "physeq_transform")
+  return(phylobjs_return)
 }
 
 #' @title Create Filtered Abundance Tables using Raw OTU/ASV input (Illumina MiSeq)
