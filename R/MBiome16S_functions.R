@@ -97,7 +97,6 @@ calculate_abund.metadata <- function(feature_csv,metadata_csv){
 #' @export
 #' @examples NA
 calculate_abund <- function(feature_csv){
-  library(vegan)
   dat<-t(data.matrix(read.csv(feature_csv, header=TRUE, row.names = 1)))
   #transposed so that the row names are now the sample names and the ASVs are the columns
   dat <- as.data.frame(dat)

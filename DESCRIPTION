@@ -10,8 +10,7 @@ Description: Conducts essential microbiome analyses on Illumina Miseq
     assessing and adjusting for batch effect, alpha and beta diversity analyses
     using vegan, and taxonomy analyses conducted using phyloseq.
 License: GPL (>= 3)
-Imports:  BiocManager(>= 1.30.21), pgirmess (>= 2.0.0), ggplot2 (>= 2.1.0), 
-    phyloseq (>= 1.42.0), microbiome (>= 1.20.0), multcompView (>= 0.1.0), 
+Imports:  pgirmess (>= 2.0.0), phyloseq (>= 1.42.0), microbiome (>= 1.20.0), multcompView (>= 0.1.0), 
     MMUPHin (>= 1.12.1), vegan (>= 2.5)
 Encoding: UTF-8
 LazyData: true
