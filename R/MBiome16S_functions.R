@@ -4,7 +4,7 @@
 #' only one function. This is a required step when performing any kind of
 #' analyses in RStudio to allow for reproducible results.
 #' @param file_path string, a file path to the folder where all generated files will be stored
-#' @param seed_number numeric, user-defined random number
+#' @param seed_number numeric, user-defined number
 #' @return This function does not return anything
 #' @export
 #' @examples NA
@@ -26,7 +26,6 @@ setwd_seed <- function(file_path,seed_number) {
 #' @examples NA
 create_phyloseq <- function(abund, taxonomy, metadata) {
   library(phyloseq)
-  library(microbiome)
   asvdat <- as.data.frame(t(abund)) #ASV/taxa should be the rows ("# of obs.")
   taxdat <- read.csv(taxonomy, header = TRUE, row.names = 1)
   meta <- read.csv(metadata, header = TRUE, row.names = 1)
@@ -41,9 +40,8 @@ create_phyloseq <- function(abund, taxonomy, metadata) {
   transform <- microbiome::transform #converts into relative abundances
   #Merge rare taxa in to "Other"
   physeq_transform <- transform(physeq, "compositional")
-  phylobjs_return <- list(physeq,physeq_transform)
-  names(phylobjs_return) <- c("physeq", "physeq_transform")
-  return(phylobjs_return)
+  phy_list <- list("physeq" = physeq, "physeq_transform" = physeq_transform)
+  return(phy_list)
 }
 
 #' @title Create Filtered Abundance Tables using Raw OTU/ASV input (Illumina MiSeq)
