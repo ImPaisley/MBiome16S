@@ -1,1 +1,4 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("stats", "TukeyHSD", "aov", "kruskal.test",
+               "pairwise.wilcox.test")
+importFrom("utils", "read.csv", "write.csv")
