@@ -264,7 +264,7 @@ calculate_abund_ADJ <- function(feature_csv){
 #' @export
 #' @examples NA
 taxon_aggregate <- function(phyloseq_object,tax_level) {
-  aggregation <- phyloseq::aggregate_taxa(phyloseq_object, tax_level) # aggregates the phyloseq object based on the taxonomic level provided
+  aggregation <- microbiome::aggregate_taxa(phyloseq_object, tax_level) # aggregates the phyloseq object based on the taxonomic level provided
   counts <- as.data.frame(phyloseq::taxa_sums(aggregation)) # changes the aggregation to a table that can be exported and/or viewed
   colnames(counts)[1] <- paste(tax_level, "Count", sep="") # changes the name of first column in the table
   write.csv(counts, paste(tax_level, "Counts.csv", sep="_")) # exports the table as a csv file
